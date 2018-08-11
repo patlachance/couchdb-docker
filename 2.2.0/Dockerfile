@@ -32,7 +32,7 @@ RUN apt-get update -y && apt-get install -y \
     && cat /etc/apt/sources.list.d/couchdb.list \
     && for server in $(shuf -e pgpkeys.mit.edu \
             ha.pool.sks-keyservers.net \
-            hkp://p80.pool.sks-keyservers.net:80 \
+            p80.pool.sks-keyservers.net \
             pgp.mit.edu) ; do \
         gpg --keyserver $server --recv-keys 8756C4F765C9AC3CB6B85D62379CE192D401AB61 && break || : ; \
         done \
@@ -143,14 +143,16 @@ RUN buildDeps=' \
 # Add configuration
 COPY 10-docker-default.ini /opt/couchdb/etc/default.d/
 COPY vm.args /opt/couchdb/etc/
-COPY docker-entrypoint.sh /
+COPY openshift-entrypoint.sh /
 
 # Setup directories and permissions
-RUN chown -R couchdb:couchdb /opt/couchdb/etc/default.d/ /opt/couchdb/etc/vm.args
+#RUN chown -R couchdb:root /opt/couchdb/etc/default.d/ /opt/couchdb/etc/vm.args
+RUN chown -R couchdb:root /opt/couchdb
+RUN chmod -R g=u /opt/couchdb
 
 WORKDIR /opt/couchdb
 EXPOSE 5984 4369 9100
-VOLUME ["/opt/couchdb/data"]
+#VOLUME ["/opt/couchdb/data"]
 
-ENTRYPOINT ["tini", "--", "/docker-entrypoint.sh"]
+ENTRYPOINT ["tini", "--", "/openshift-entrypoint.sh"]
 CMD ["/opt/couchdb/bin/couchdb"]
