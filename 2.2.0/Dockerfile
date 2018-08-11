@@ -58,7 +58,7 @@ RUN set -ex; \
 	export GNUPGHOME="$(mktemp -d)"; \
         for server in $(shuf -e pgpkeys.mit.edu \
             ha.pool.sks-keyservers.net \
-            hkp://p80.pool.sks-keyservers.net:80 \
+            p80.pool.sks-keyservers.net \
             pgp.mit.edu) ; do \
         gpg --keyserver $server --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || : ; \
         done; \
